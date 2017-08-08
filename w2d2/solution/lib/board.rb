@@ -19,19 +19,21 @@ class Board
   end
 
   def valid_move?(start_pos)
-    raise "Invalid starting cup" if start_pos > 12 || start_pos < 0
+    raise "Invalid starting cup" if start_pos < 0 || start_pos > 12
     raise "Invalid starting cup" if @cups[start_pos].empty?
   end
 
   def make_move(start_pos, current_player_name)
-
+    # empties cup
     stones = @cups[start_pos]
     @cups[start_pos] = []
 
+    # distributes stones
     cup_idx = start_pos
     until stones.empty?
       cup_idx += 1
       cup_idx = 0 if cup_idx > 13
+      # places stones in the correct current player's cups
       if cup_idx == 6
         @cups[6] << stones.pop if current_player_name == @name1
       elsif cup_idx == 13
@@ -40,6 +42,7 @@ class Board
         @cups[cup_idx] << stones.pop
       end
     end
+
     render
     next_turn(cup_idx)
   end
@@ -47,10 +50,13 @@ class Board
   def next_turn(ending_cup_idx)
     # helper method to determine what #make_move returns
     if ending_cup_idx == 6 || ending_cup_idx == 13
+      # ended on store -- get to choose where to start again
       :prompt
-    elsif @cups[ending_cup_idx].length == 1
+    elsif @cups[ending_cup_idx].count == 1
+      # ended on empty cup -- switches players' turns
       :switch
     else
+      # ended on cup with stones in it -- automatically starts there
       ending_cup_idx
     end
   end
@@ -64,15 +70,18 @@ class Board
   end
 
   def one_side_empty?
-    return true if @cups[0..5].all?(&:empty?) ||
-    @cups[7..12].all?(&:empty?)
-    false
+    @cups.take(6).all? { |cup| cup.empty? } ||
+    @cups[7..12].all? { |cup| cup.empty? }
   end
 
   def winner
-    p1_stones = @cups[6].count
-    p2_stones = @cups[13].count
-    return :draw if p1_stones == p2_stones
-    p1_stones > p2_stones ? @name1 : @name2
+    player1_count = @cups[6].count
+    player2_count = @cups[13].count
+
+    if player1_count == player2_count
+      :draw
+    else
+      player1_count > player2_count ? @name1 : @name2
+    end
   end
 end
