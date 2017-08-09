@@ -7,12 +7,12 @@ without blocks)! Be sure to look over the solutions when you're done.
 =end
 
 describe Dessert do
-  subject(:dessert) { Dessert.new("Ice Cream", 60, "Ben") }
+  subject(:dessert) { Dessert.new("yogurt", 60, chef) }
   let(:chef) { double("chef") }
 
   describe "#initialize" do
     it "sets a type" do
-      expect(dessert.type).to eq("Ice Cream")
+      expect(dessert.type).to eq("yogurt")
     end
 
     it "sets a quantity" do
@@ -24,7 +24,7 @@ describe Dessert do
     end
 
     it "raises an argument error when given a non-integer quantity" do
-      expect { Dessert.new("Cake", "Fifty", "Bob") }.to raise_error(ArgumentError)
+      expect { Dessert.new("cake", "fifty", "bob") }.to raise_error(ArgumentError)
     end
   end
 
@@ -37,20 +37,40 @@ describe Dessert do
   end
 
   describe "#mix!" do
-    it "shuffles the ingredient array"
+    it "shuffles the ingredient array" do
+      ingredients = ["chocolate", "flour", "egg", "sugar", "butter"]
+      ingredients.each do |ingredient|
+        dessert.add_ingredient(ingredient)
+      end
+
+      expect(dessert.ingredients).to eq(ingredients)
+      dessert.mix!
+      expect(dessert.ingredients).to_not eq(ingredients)
+      expect(dessert.ingredients.sort).to eq(ingredients.sort)
+    end
   end
 
   describe "#eat" do
-    it "subtracts an amount from the quantity"
+    it "subtracts an amount from the quantity" do
+      expect(dessert.eat(20)).to eq(40)
+    end
 
-    it "raises an error if the amount is greater than the quantity"
+    it "raises an error if the amount is greater than the quantity" do
+      expect{ dessert.eat(120) }.to raise_error("not enough left!")
+    end
   end
 
   describe "#serve" do
-    it "contains the titleized version of the chef's name"
+    it "contains the titleized version of the chef's name" do
+      allow(chef).to receive(:titleize).and_return("Chef Al the Great Baker")
+      expect(dessert.serve).to eq("Chef Al the Great Baker has made 60 yogurts!")
+    end
   end
 
   describe "#make_more" do
-    it "calls bake on the dessert's chef with the dessert passed in"
+    it "calls bake on the dessert's chef with the dessert passed in" do
+      expect(chef).to receive(:bake).with(dessert)
+      dessert.make_more
+    end
   end
 end
