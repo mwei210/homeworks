@@ -9921,9 +9921,7 @@ module.exports = __webpack_require__(118);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var selectCurrency = function selectCurrency(_ref) {
-  var baseCurrency = _ref.baseCurrency,
-      rates = _ref.rates;
+var selectCurrency = function selectCurrency(baseCurrency, rates) {
   return {
     type: 'SWITCH_CURRENCY',
     baseCurrency: baseCurrency,
@@ -23694,8 +23692,6 @@ var reducer = function reducer() {
       return state;
   }
 };
-
-window.reducer = reducer;
 
 exports.default = reducer;
 
